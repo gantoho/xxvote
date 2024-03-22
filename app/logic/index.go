@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"xxvote/app/model"
+	"xxvote/app/tools"
 )
 
 func Index(context *gin.Context) {
@@ -21,5 +22,27 @@ func GetVoteInfo(context *gin.Context) {
 }
 
 func PostVote(context *gin.Context) {
-	//voteOptId := context.PostForm("voteOptId")
+	userIDStr, _ := context.Cookie("id")
+	voteIdStr, _ := context.GetPostForm("vote_id")
+	optStr, _ := context.GetPostFormArray("opt[]")
+
+	userID, _ := strconv.ParseInt(userIDStr, 10, 64)
+	voteId, _ := strconv.ParseInt(voteIdStr, 10, 64)
+	opt := make([]int64, 0)
+	for _, v := range optStr {
+		optId, _ := strconv.ParseInt(v, 10, 64)
+		opt = append(opt, optId)
+	}
+	err := model.PostVote(userID, voteId, opt)
+	if err != true {
+		//context.JSON(http.StatusOK, gin.H{"code": 1, "msg": "投票失败"})
+		context.JSON(http.StatusOK, tools.Ecode{
+			Code:    1,
+			Message: "投票失败",
+		})
+		return
+	}
+	context.JSON(http.StatusOK, tools.Ecode{
+		Message: "投票成功",
+	})
 }

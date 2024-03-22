@@ -19,6 +19,8 @@ func New() {
 
 	g.GET("/", logic.Index)
 
+	g.GET("/logout", logic.Logout)
+
 	g.GET("/login", logic.LoginGet)
 	g.POST("/login", logic.LoginPost)
 
@@ -33,6 +35,7 @@ func checkUser(context *gin.Context) {
 	name, err := context.Cookie("name")
 	if err != nil || name == "" {
 		context.Redirect(http.StatusFound, "/login")
+		context.Abort()
 	}
 	context.Next()
 }

@@ -11,7 +11,7 @@
  Target Server Version : 80300 (8.3.0)
  File Encoding         : 65001
 
- Date: 21/03/2024 23:14:35
+ Date: 23/03/2024 00:23:51
 */
 
 SET NAMES utf8mb4;
@@ -69,11 +69,15 @@ CREATE TABLE `vote_opt`  (
   `created_time` datetime NULL DEFAULT NULL,
   `updated_time` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of vote_opt
 -- ----------------------------
+INSERT INTO `vote_opt` VALUES (1, '红烧肉', 1, 1, '2024-03-22 13:52:18', '2024-03-22 22:03:56');
+INSERT INTO `vote_opt` VALUES (2, '宫保鸡丁', 1, 1, '2024-03-22 13:52:44', '2024-03-22 22:03:57');
+INSERT INTO `vote_opt` VALUES (3, '回锅肉', 1, 0, '2024-03-22 13:53:06', '2024-03-23 00:23:38');
+INSERT INTO `vote_opt` VALUES (4, '大盘鸡', 1, 0, '2024-03-22 13:53:25', '2024-03-22 22:55:16');
 
 -- ----------------------------
 -- Table structure for vote_opt_user
@@ -86,10 +90,12 @@ CREATE TABLE `vote_opt_user`  (
   `vote_opt_id` bigint NULL DEFAULT NULL,
   `created_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of vote_opt_user
 -- ----------------------------
+INSERT INTO `vote_opt_user` VALUES (1, 1, 1, 1, '2024-03-22 22:03:57');
+INSERT INTO `vote_opt_user` VALUES (2, 1, 1, 2, '2024-03-22 22:03:57');
 
 SET FOREIGN_KEY_CHECKS = 1;

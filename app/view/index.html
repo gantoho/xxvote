@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>投票</title>
 </head>
 <body>
-    <h1>这是首页</h1>
+    <main>
+        {{range $key,$value := .vote}}
+        <div class="item">
+            <a href="/vote?id={{$value.Id}}">
+                <i>{{$key}}</i><span>{{$value.Title}}</span>
+            </a>
+        </div>
+        {{end}}
+    </main>
 </body>
 </html>

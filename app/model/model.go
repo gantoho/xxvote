@@ -53,3 +53,8 @@ type VoteOptUser struct {
 func (v *VoteOptUser) TableName() string {
 	return "vote_opt_user"
 }
+
+type VoteWithOpt struct {
+	Vote Vote
+	Opt  []VoteOpt
+}

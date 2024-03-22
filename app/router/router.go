@@ -14,6 +14,8 @@ func New() {
 	index := g.Group("")
 	index.Use(checkUser)
 	index.GET("/index", logic.Index)
+	index.GET("/vote", logic.GetVoteInfo)
+	index.POST("/vote", logic.PostVote)
 
 	g.GET("/", logic.Index)
 

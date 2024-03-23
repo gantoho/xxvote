@@ -67,3 +67,11 @@ func PostVote(userId, voteId int64, optIDs []int64) bool {
 
 	return true
 }
+
+// 原生事务 例子
+//func PostVote1(userId, voteId int64, optIDs []int64) bool {
+//	Conn.Exec("begin").
+//		Exec("select * from vote where id = ?", voteId).
+//		Exec("commit")
+//	return false
+//}

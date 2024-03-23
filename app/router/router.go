@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"xxvote/app/logic"
+	"xxvote/app/model"
+	"xxvote/app/tools"
 )
 
 func New() {
@@ -32,8 +34,19 @@ func New() {
 }
 
 func checkUser(context *gin.Context) {
-	name, err := context.Cookie("name")
-	if err != nil || name == "" {
+	var name string
+	var id int64
+	values := model.GetSession(context)
+	if v, ok := values["name"]; ok {
+		name = v.(string)
+	}
+	if v, ok := values["id"]; ok {
+		id = v.(int64)
+	}
+	if name == "" || id <= 0 {
+		context.JSON(http.StatusOK, tools.Ecode{
+			Message: "请先登录",
+		})
 		context.Redirect(http.StatusFound, "/login")
 		context.Abort()
 	}

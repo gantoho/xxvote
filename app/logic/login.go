@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"xxvote/app/model"
@@ -32,16 +31,23 @@ func LoginPost(context *gin.Context) {
 		})
 		return
 	}
-	context.SetCookie("name", user.Name, 3600, "/", "localhost", false, true)
-	context.SetCookie("id", fmt.Sprint(ret.Id), 3600, "/", "localhost", false, true)
+
+	// context.SetCookie("name", user.Name, 3600, "/", "localhost", false, true)
+	// context.SetCookie("id", fmt.Sprint(ret.Id), 3600, "/", "localhost", false, true)
+
+	_ = model.SetSession(context, user.Name, ret.Id)
+
 	context.JSON(http.StatusOK, tools.Ecode{
 		Message: "登录成功",
 	})
+	return
 	//context.Redirect(http.StatusMovedPermanently, "index")
 }
 
 func Logout(context *gin.Context) {
-	context.SetCookie("name", "", 0, "/", "localhost", false, true)
-	context.SetCookie("id", "", 0, "/", "localhost", false, true)
+	//context.SetCookie("name", "", 0, "/", "localhost", false, true)
+	//context.SetCookie("id", "", 0, "/", "localhost", false, true)
+
+	_ = model.FlushSession(context)
 	context.Redirect(http.StatusFound, "/login")
 }

@@ -75,3 +75,40 @@ func PostVote(userId, voteId int64, optIDs []int64) bool {
 //		Exec("commit")
 //	return false
 //}
+
+// 匿名函数事务 最常用
+func PostVote2(userId, voteId int64, optIDs []int64) bool {
+	err := Conn.Transaction(func(tx *gorm.DB) error {
+		var ret Vote
+		if err := tx.Table("vote").Where("id = ?", voteId).First(&ret).Error; err != nil {
+			fmt.Printf("err:%s", err.Error())
+			return err //只要返回了err GORM会直接回滚，不会提交
+		}
+
+		for _, value := range optIDs {
+			if err := tx.Table("vote_opt").Where("id = ?", value).Update("count", gorm.Expr("count + ?", 1)).Error; err != nil {
+				fmt.Printf("err:%s", err.Error())
+				return err
+			}
+			user := VoteOptUser{
+				VoteId:      voteId,
+				UserId:      userId,
+				VoteOptId:   value,
+				CreatedTime: time.Now(),
+			}
+			err := tx.Create(&user).Error // 通过数据的指针来创建
+			if err != nil {
+				fmt.Printf("err:%s", err.Error())
+				return err
+			}
+		}
+		return nil //如果返回nil 则直接commit
+	})
+
+	if err != nil {
+		fmt.Printf("err:%s", err.Error())
+		return false
+	}
+
+	return true
+}

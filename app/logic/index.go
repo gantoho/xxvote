@@ -36,13 +36,13 @@ func PostVote(context *gin.Context) {
 	err := model.PostVote(userID, voteId, opt)
 	if err != true {
 		//context.JSON(http.StatusOK, gin.H{"code": 1, "msg": "投票失败"})
-		context.JSON(http.StatusOK, tools.Ecode{
+		context.JSON(http.StatusOK, tools.ECode{
 			Code:    1,
 			Message: "投票失败",
 		})
 		return
 	}
-	context.JSON(http.StatusOK, tools.Ecode{
+	context.JSON(http.StatusOK, tools.ECode{
 		Message: "投票成功",
 	})
 }

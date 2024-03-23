@@ -33,16 +33,19 @@ func GetVote(id int64) VoteWithOpt {
 }
 
 func PostVote(userId, voteId int64, optIDs []int64) bool {
+	tx := Conn.Begin()
 	var ret Vote
-	err := Conn.Table("vote").Where("id = ?", voteId).First(&ret).Error
+	err := tx.Table("vote").Where("id = ?", voteId).First(&ret).Error
 	if err != nil {
 		fmt.Printf("err:%s", err.Error())
+		tx.Rollback()
 		return false
 	}
 	for _, value := range optIDs {
-		err = Conn.Table("vote_opt").Where("id = ?", value).Update("count", gorm.Expr("count + ?", 1)).Error
+		err = tx.Table("vote_opt").Where("id = ?", value).Update("count", gorm.Expr("count + ?", 1)).Error
 		if err != nil {
 			fmt.Printf("err:%s", err.Error())
+			tx.Rollback()
 			return false
 		}
 
@@ -52,12 +55,14 @@ func PostVote(userId, voteId int64, optIDs []int64) bool {
 			VoteOptId:   value,
 			CreatedTime: time.Now(),
 		}
-		err = Conn.Table("vote_opt_user").Create(&user).Error
+		err = tx.Table("vote_opt_user").Create(&user).Error
 		if err != nil {
 			fmt.Printf("err:%s", err.Error())
+			tx.Rollback()
 			return false
 		}
 	}
+	tx.Commit()
 
 	return true
 }

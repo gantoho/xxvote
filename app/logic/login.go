@@ -20,15 +20,13 @@ func LoginPost(context *gin.Context) {
 	var user User
 	err := context.ShouldBind(&user)
 	if err != nil {
-		context.JSON(http.StatusOK, tools.Ecode{
+		context.JSON(http.StatusOK, tools.ECode{
 			Message: err.Error(), // 这里有风险
 		})
 	}
 	ret := model.GetUser(user.Name)
 	if ret.Id < 1 || ret.Password != user.Password {
-		context.JSON(http.StatusOK, tools.Ecode{
-			Message: "账号或密码错误",
-		})
+		context.JSON(http.StatusOK, tools.UserErr)
 		return
 	}
 
@@ -37,7 +35,7 @@ func LoginPost(context *gin.Context) {
 
 	_ = model.SetSession(context, user.Name, ret.Id)
 
-	context.JSON(http.StatusOK, tools.Ecode{
+	context.JSON(http.StatusOK, tools.ECode{
 		Message: "登录成功",
 	})
 	return

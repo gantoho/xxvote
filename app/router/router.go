@@ -44,9 +44,7 @@ func checkUser(context *gin.Context) {
 		id = v.(int64)
 	}
 	if name == "" || id <= 0 {
-		context.JSON(http.StatusOK, tools.Ecode{
-			Message: "请先登录",
-		})
+		context.JSON(http.StatusOK, tools.NotLogin)
 		context.Redirect(http.StatusFound, "/login")
 		context.Abort()
 	}

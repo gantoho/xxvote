@@ -32,6 +32,7 @@ func GetVote(id int64) VoteWithOpt {
 	}
 }
 
+// PostVote GORM 最常用的事务方法
 func PostVote(userId, voteId int64, optIDs []int64) bool {
 	tx := Conn.Begin()
 	var ret Vote

@@ -13,18 +13,28 @@ func New() {
 	g := gin.Default()
 	g.LoadHTMLGlob("app/view/*")
 
-	index := g.Group("")
-	index.Use(checkUser)
-	index.GET("/index", logic.Index)
-	index.GET("/vote", logic.GetVoteInfo)
-	index.POST("/vote", logic.PostVote)
+	{
+		index := g.Group("")
+		index.Use(checkUser)
+		// vote
+		index.GET("/index", logic.Index)
+
+		index.GET("/votes", logic.GetVotes)
+		index.GET("/vote", logic.GetVoteInfo)
+		index.POST("/vote", logic.PostVote)
+
+		index.POST("/vote/add", logic.AddVote)
+		index.POST("/vote/update", logic.UpdateVote)
+		index.POST("/vote/del", logic.DeleteVote)
+	}
 
 	g.GET("/", logic.Index)
 
-	g.GET("/logout", logic.Logout)
-
-	g.GET("/login", logic.LoginGet)
-	g.POST("/login", logic.LoginPost)
+	{
+		g.GET("/logout", logic.Logout)
+		g.GET("/login", logic.LoginGet)
+		g.POST("/login", logic.LoginPost)
+	}
 
 	err := g.Run(":8090")
 	if err != nil {

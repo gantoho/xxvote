@@ -13,12 +13,22 @@ func Index(context *gin.Context) {
 	context.HTML(http.StatusOK, "index.html", gin.H{"vote": ret})
 }
 
+func GetVotes(context *gin.Context) {
+	ret := model.GetVotes()
+	context.JSON(http.StatusOK, tools.ECode{
+		Data: ret,
+	})
+}
+
 func GetVoteInfo(context *gin.Context) {
 	var id int64
 	idStr := context.Query("id")
 	id, _ = strconv.ParseInt(idStr, 10, 64)
 	voteWithOpt := model.GetVote(id)
-	context.HTML(http.StatusOK, "vote.html", gin.H{"voteWithOpt": voteWithOpt})
+	context.JSON(http.StatusOK, tools.ECode{
+		Data: voteWithOpt,
+	})
+	//context.HTML(http.StatusOK, "vote.html", gin.H{"voteWithOpt": voteWithOpt})
 }
 
 func PostVote(context *gin.Context) {

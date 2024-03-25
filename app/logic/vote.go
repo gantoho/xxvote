@@ -74,3 +74,41 @@ func DeleteVote(context *gin.Context) {
 	context.JSON(http.StatusOK, tools.OK)
 	return
 }
+
+func ResultInfo(context *gin.Context) {
+	context.HTML(http.StatusOK, "result.html", nil)
+}
+
+type ResultData struct {
+	Title string
+	Count int64
+	Opt   []*ResultVoteOpt
+}
+
+type ResultVoteOpt struct {
+	Name  string
+	Count int64
+}
+
+func ResultVote(context *gin.Context) {
+	var id int64
+	idStr := context.Query("id")
+	id, _ = strconv.ParseInt(idStr, 10, 64)
+	ret := model.GetVote(id)
+	data := ResultData{
+		Title: ret.Vote.Title,
+	}
+
+	for _, v := range ret.Opt {
+		data.Count = data.Count + v.Count
+		tmp := ResultVoteOpt{
+			Name:  v.Name,
+			Count: v.Count,
+		}
+		data.Opt = append(data.Opt, &tmp)
+	}
+
+	context.JSON(http.StatusOK, tools.ECode{
+		Data: data,
+	})
+}

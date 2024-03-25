@@ -26,6 +26,9 @@ func New() {
 		index.POST("/vote/add", logic.AddVote)
 		index.POST("/vote/update", logic.UpdateVote)
 		index.POST("/vote/del", logic.DeleteVote)
+
+		index.GET("/result", logic.ResultInfo)
+		index.GET("/result/info", logic.ResultVote)
 	}
 
 	g.GET("/", logic.Index)

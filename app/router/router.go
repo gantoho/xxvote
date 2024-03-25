@@ -37,6 +37,7 @@ func New() {
 		g.GET("/logout", logic.Logout)
 		g.GET("/login", logic.LoginGet)
 		g.POST("/login", logic.LoginPost)
+		g.POST("/user/create", logic.CreateUser)
 	}
 
 	err := g.Run(":8090")

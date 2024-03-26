@@ -1,6 +1,8 @@
 package tools
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	OK       = ECode{Code: 0}

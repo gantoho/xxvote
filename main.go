@@ -1,6 +1,8 @@
 package main
 
-import "xxvote/app"
+import (
+	"xxvote/app"
+)
 
 func main() {
 	app.Start()

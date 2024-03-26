@@ -1,7 +1,11 @@
 package logic
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"regexp"
 	"time"
@@ -27,7 +31,7 @@ func LoginPost(context *gin.Context) {
 		})
 	}
 	ret := model.GetUser(user.Name)
-	if ret.Id < 1 || ret.Password != user.Password {
+	if ret.Id < 1 || ret.Password != encryptV1(user.Password) {
 		context.JSON(http.StatusOK, tools.UserErr)
 		return
 	}
@@ -69,6 +73,12 @@ func CreateUser(context *gin.Context) {
 		return
 	}
 
+	//测试
+	//encrypt(user.Password)
+	//encryptV1(user.Password)
+	//encryptV2(user.Password)
+	//return
+
 	if user.Name == "" || user.Password == "" || user.Password2 == "" {
 		context.JSON(http.StatusOK, tools.ParamErr)
 		return
@@ -78,15 +88,6 @@ func CreateUser(context *gin.Context) {
 		context.JSON(http.StatusOK, tools.ECode{
 			Code:    10003,
 			Message: "两次密码不一致",
-		})
-		return
-	}
-
-	//这里有一个巨大的BUG，并发安全！！！
-	if oldUser := model.GetUser(user.Name); oldUser.Id > 0 {
-		context.JSON(http.StatusOK, tools.ECode{
-			Code:    10004,
-			Message: "用户已存在",
 		})
 		return
 	}
@@ -109,13 +110,21 @@ func CreateUser(context *gin.Context) {
 		return
 	}
 
+	//这里有一个巨大的BUG，并发安全！！！
+	if oldUser := model.GetUser(user.Name); oldUser.Id > 0 {
+		context.JSON(http.StatusOK, tools.ECode{
+			Code:    10004,
+			Message: "用户已存在",
+		})
+		return
+	}
+
 	newUser := model.User{
 		Name:        user.Name,
-		Password:    user.Password,
+		Password:    encryptV1(user.Password),
 		CreatedTime: time.Now(),
 		UpdatedTime: time.Now(),
 	}
-
 	err = model.CreateUse(&newUser)
 	if err != nil {
 		context.JSON(http.StatusOK, tools.ECode{
@@ -127,4 +136,37 @@ func CreateUser(context *gin.Context) {
 
 	context.JSON(http.StatusOK, tools.OK)
 	return
+}
+
+// 最基础的版本
+func encrypt(pwd string) string {
+	hash := md5.New()
+	hash.Write([]byte(pwd))
+	hashBytes := hash.Sum(nil)
+	hashString := hex.EncodeToString(hashBytes)
+	fmt.Printf("加密后的密码：%s\n", hashString)
+	return hashString
+}
+
+func encryptV1(pwd string) string {
+	newPwd := pwd + "香香编程喵喵喵" //不能随便起，且不能暴露
+	hash := md5.New()
+	hash.Write([]byte(newPwd))
+	hashBytes := hash.Sum(nil)
+	hashString := hex.EncodeToString(hashBytes)
+	fmt.Printf("加密后的密码：%s\n", hashString)
+	return hashString
+}
+
+func encryptV2(pwd string) string {
+	//基于Blowfish 实现加密。简单快速，但有安全风险
+	//golang.org/x/crypto/ 中有大量的加密算法
+	newPwd, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("密码加密失败：", err)
+		return ""
+	}
+	newPwdStr := string(newPwd)
+	fmt.Printf("加密后的密码：%s\n", newPwdStr)
+	return newPwdStr
 }
